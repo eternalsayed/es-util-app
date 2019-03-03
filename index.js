@@ -12,7 +12,7 @@ module.exports = {
                 break;
         }
     },
-    setCommonGlobals: function(baseDir) {
+    setCommonGlobals: function(baseDir, projectName) {
         if(this.globals) return console.log('Globals already set. Returning');
         baseDir = baseDir || __dirname;
         this.baseDir = baseDir;
@@ -21,6 +21,8 @@ module.exports = {
         global.__home = baseDir+'/';
         global.__modules = __home+"/modules";
 
+        projectName && this.setProjectSpecificGlobals(projectName);
+        
         global.__jsonPath = baseDir+'/data/';
         global.__data = baseDir+'/data/';
 
