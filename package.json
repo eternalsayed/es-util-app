@@ -1,0 +1,19 @@
+{
+  "name": "es-util-app",
+  "version": "1.0.0",
+  "description": "ES Utility for NodeJS apps",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eternalsayed/es-util-app.git"
+  },
+  "author": "Sayed Ahad Abbas <super@eternalsayed.in>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/eternalsayed/es-util-app/issues"
+  },
+  "homepage": "https://github.com/eternalsayed/es-util-app#readme"
+}
