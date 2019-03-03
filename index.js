@@ -60,11 +60,18 @@ module.exports = {
         global.__apiPath = __server+__api;//contains for API referred by this request
         next();
     },
-    helper: function (name) {
+    loadHelper: function (name) {
         const baseUrl = __helpers;
         if(typeof helpers!=='undefined' && helpers.list[name])
             return require(baseUrl+helpers.list[name]);
-        return require(baseUrl+name);
+        let helperModule = null;
+        try {
+            helperModule = require(baseUrl+name);
+        } catch(e) {
+            const esHelperName = 'es-helper-'+name.replace(/^es-helper-/i,'');
+            helperModule = require(esHelperName);
+        }
+        return helperModule;
     },
 
     // removed: .loadModules function
