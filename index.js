@@ -34,7 +34,7 @@ module.exports = {
         global.__public = baseDir+'/public/';
         global.__images = baseDir+'/public/images/';
 
-        global.dbo = this.helper('db/mysql');
+        global.dbo = this.loadHelper('mysql');
 
         const paths = require('path');
         const basename = paths.basename(__home);
