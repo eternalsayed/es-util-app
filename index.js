@@ -3,6 +3,15 @@
  */
 const debug = require('debug')(process.env.DEBUG);
 module.exports = {
+    setProjectSpecificGlobals: function(projectName) {
+        switch(projectName.toUpperCase()) {
+            case 'GIRIYA_API':
+                global.__modules = __home+"/modules";
+                global.__routes = __home+"/api/routes/";
+                global.__apiModels = __modules+'/api/models/';
+                break;
+        }
+    },
     setCommonGlobals: function(baseDir) {
         if(this.globals) return console.log('Globals already set. Returning');
         baseDir = baseDir || __dirname;
@@ -10,12 +19,13 @@ module.exports = {
         this.globals = true;
         debug('setting common globals!');
         global.__home = baseDir+'/';
-        global.__modules = baseDir+"/modules";
-        global.__routes = baseDir+"/modules/api/routes/";
-        global.__apiModels = baseDir+'/api/models/';
+        global.__modules = __home+"/modules";
+
         global.__jsonPath = baseDir+'/data/';
-        global.__helpers = baseDir+'/helpers/';
         global.__data = baseDir+'/data/';
+
+        global.__helpers = baseDir+'/helpers/';
+
         global.__config = baseDir+'/configs/';
         global.__lang = __config+'/lang';
         global.__middleware = baseDir+'/middleware/';
@@ -59,27 +69,6 @@ module.exports = {
 
     parentUrl: function(url) {
         return url.substr(0, url.lastIndexOf('/'));
-    },
-    getJSON: function(jsonPath, def=null) {
-        let fs = require('fs');
-        jsonPath = jsonPath.replace(/\.json$/i,'')+'.json';
-        let json;
-        try {
-            if(fs.existsSync(jsonPath)) {
-                json = fs.readFileSync(jsonPath);
-                json = JSON.parse(json);
-            }
-            return json || def;
-        }catch(e) {
-            console.log('parse error: ', e);
-        }
-        return json || def;
-    },
-    saveJSON: function(filePath, content) {
-        filePath = filePath.replace(/\.json$/i,'')+'.json';
-        let fs = require('fs');
-        content = typeof content==='string' ?content :JSON.stringify(content, null, 4);
-        fs.writeFileSync(filePath, content);
     },
     toCamelCase: function (obj) {
         var self = this;
