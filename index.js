@@ -6,7 +6,7 @@ module.exports = {
     setProjectSpecificGlobals: function(projectName) {
         switch(projectName.toUpperCase()) {
             case 'GIRIYA_API':
-                global.__modules = __home+"modules";
+                global.__modules = __home+"modules/";
                 global.__routes = __modules+"api/routes/";
                 global.__apiModels = __modules+'api/models/';
                 break;
