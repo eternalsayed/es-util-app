@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/eternalsayed/es-util-app/issues"
   },
-  "homepage": "https://github.com/eternalsayed/es-util-app#readme"
+  "homepage": "https://github.com/eternalsayed/es-util-app#readme",
+  "dependencies": {
+    "es-helper-mysql": "git+https://github.com/eternalsayed/es-helper-mysql.git"
+  },
+  "private": true
 }
