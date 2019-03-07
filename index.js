@@ -6,33 +6,39 @@ module.exports = {
     setProjectSpecificGlobals: function(projectName) {
         switch(projectName.toUpperCase()) {
             case 'GIRIYA_API':
-                global.__modules = __home+"modules/";
                 global.__routes = __modules+"api/routes/";
                 global.__apiModels = __modules+'api/models/';
+                break;
+            case 'FC_API':
+                global.__models = __home+"models/";
+                global.__zip = __home+'/public/zip/';
+                global.__repos = __home+'/public/repos/';
+                global.__bashPath = __helpers+'/bash-scripts/';
                 break;
         }
     },
     setCommonGlobals: function(baseDir, projectName) {
         if(this.globals) return console.log('Globals already set. Returning');
-        baseDir = baseDir || __dirname;
-        this.baseDir = baseDir;
-        this.globals = true;
         debug('setting common globals!');
-        global.__home = baseDir+'/';
-        global.__modules = __home+"/modules";
+        this.globals = true;
+
+        baseDir = baseDir || __dirname;
+        baseDir = baseDir.replace(/\/$/,'')+'/';
+        global.__home = baseDir;
+        global.__modules = __home+"modules";
+
+        global.__jsonPath = baseDir+'data/';
+        global.__data = baseDir+'data/';
+
+        global.__helpers = baseDir+'helpers/';
 
         projectName && this.setProjectSpecificGlobals(projectName);
-        
-        global.__jsonPath = baseDir+'/data/';
-        global.__data = baseDir+'/data/';
 
-        global.__helpers = baseDir+'/helpers/';
-
-        global.__config = baseDir+'/configs/';
-        global.__lang = __config+'/lang';
-        global.__middleware = baseDir+'/middleware/';
-        global.__public = baseDir+'/public/';
-        global.__images = baseDir+'/public/images/';
+        global.__config = baseDir+'configs/';
+        global.__lang = __config+'lang';
+        global.__middleware = baseDir+'middleware/';
+        global.__public = baseDir+'public/';
+        global.__images = __public+'images/';
 
         global.dbo = this.loadHelper('mysql');
 
@@ -43,7 +49,8 @@ module.exports = {
         const platform = process.platform;// 'darwin', 'freebsd', 'linux', 'sunos' or 'win32'
         global.__isMac = Boolean(platform.match(/darwin/i));
         debug('isMac ?', __isMac && 'Yes' || 'No');
-        global.__isLocal = (__isMac || platform.match(/win32/i)) && false;
+        global.__isLocal = (__isMac || platform.match(/win32/i));
+        __isLocal = false;//TODO:Remove this hardcoding
         debug('isLocal ?', __isLocal && 'Yes' || 'No');
         global.__mode = !(__isMac || __isLocal) ?(basename.match(/live/i) ?'live' :'dev') :"local";
         //set mode to DEV for debug mode
@@ -78,6 +85,9 @@ module.exports = {
 
     parentUrl: function(url) {
         return url.substr(0, url.lastIndexOf('/'));
+    },
+    copy: function (objArr) {
+        return objArr ?JSON.parse(JSON.stringify(objArr)) :objArr;
     },
     toCamelCase: function (obj) {
         var self = this;
@@ -121,6 +131,33 @@ module.exports = {
     decodeBase64: function (b64Encoded) {
         return (new Buffer(b64Encoded, 'base64').toString());
     },
+    get: function (key) {
+        key = key.toLowerCase().split(':');
+        switch(key[0]) {
+            case 'date':
+            case 'timestamp':
+            case 'ts':
+                if(key==='ts' || key==='timestamp') {
+                    // return Math.floor(Date.now() / 1000);//is buggy
+                    var ts = +new Date;
+                    return ts;
+                }
+                var d = new Date();
+
+                var format = (key[1] || 'dd-mm-yy').toLowerCase().split('-');
+                var data = [];
+                format.forEach(function (field) {
+                    if(field=='dd')
+                        data.push(d.getDate());
+                    else if(field=='mm')
+                        data.push(('0'+(d.getMonth()+1)).substr(-2));
+                    else if(field=='yy')
+                        data.push(d.getFullYear());
+                });
+                return data.join('-');
+                break;
+        }
+    },
     createUserToken: function (userObj) {
         let jwt = require('jsonwebtoken');
         const temp = this.toCamelCase(userObj);
@@ -131,5 +168,14 @@ module.exports = {
             name: temp.fullName || temp.name
         };
         return jwt.sign(tokenObj, config.jwtSecret, {noTimestamp: true});
+    },
+    queryStringToJSON: function (str) {
+        if(typeof str!=='string' || !(str.match(/(.*=.*&?)+/)))
+            return str;
+        const advancedQueryString = require('qs');
+        let parsed = advancedQueryString.parse(str, {depth: 10});
+        console.log("parsed queryToJSON: ", parsed);
+
+        return parsed;
     }
 };
