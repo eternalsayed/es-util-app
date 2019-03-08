@@ -21,8 +21,19 @@ This is a middleware function that is required to set the paths based on request
 
 ```javascript
 const appUtil = require('es-util-app');
-app.use(appUtil.setrequestGlobal);
+app.use(appUtil.setRequestGlobals);
 ```
+### loadHelper(name)
+This funciton is used by this utility as well as the apps to load one of es-pefixed helpers or a helper whose path is specified in the global object `helpers`. If a helper is specified within global object helpers, it's path must be relative to `helpers` directory within the `home` directory. In all other cases, the function will fail.
+
+In case one of es-prefixed helpers are being loaded, you can pass the complete helper name, such as `es-helper-mysql` or can ignore the es-prefix and just pass the main name, i.e., `mysql`. The helper will load, regardless, in both the cases, given that the helper module/file is not missing.
+
+### toCamelCase(obj)
+This function converts an array or object to an object containing camelCased keys only. If a string is passed instead of an array/object, the string will be converted to a camelCased string.
+
+### reverseCamelCase(obj)
+This function converts key of camelCased object to an object with regular keys. Please note that camelCased keys will be converted to keys separated by an underscore (`_`).
+
 
 ## Contributing:
 You're more than welcome to help me improvise this code. To begin, fork the project, create a branch in your name from `master` and when you're done, please raise a `pull-request`. I'll try to be prompt in merging your requests ASAP.
