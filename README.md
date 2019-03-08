@@ -34,6 +34,9 @@ This function converts an array or object to an object containing camelCased key
 ### reverseCamelCase(obj)
 This function converts key of camelCased object to an object with regular keys. Please note that camelCased keys will be converted to keys separated by an underscore (`_`).
 
+## createUserToken(userObj)
+This function creates a `JWT` using a JS object. It requires the `jsonwebtoken` package to create this token and contains minimal fields from userObj. The size of the token will vary greatly by higher number of fields from userObj and therefore, only minimal fields are taken.
+
 
 ## Contributing:
 You're more than welcome to help me improvise this code. To begin, fork the project, create a branch in your name from `master` and when you're done, please raise a `pull-request`. I'll try to be prompt in merging your requests ASAP.
