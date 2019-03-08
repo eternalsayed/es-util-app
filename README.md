@@ -1,5 +1,5 @@
 # es-util-app
-Utility functions that serve as wrapper over normally written functions that are to be used across multiple apps.
+Utility functions that serve as wrapper over normally written functions, to be used across multiple apps/APIs.
 
 ## Installation
 You can install the utility using `npm`, or you can simply download the zip (Click on 'Download zip' button above) and reference the index.js file in your NodeJS code. Please note that this code is not to be used in Front End as not only it is irrelevant, but may fail as well.
