@@ -11,9 +11,9 @@ module.exports = {
                 break;
             case 'FC_API':
                 global.__models = __home+"models/";
-                global.__zip = __home+'/public/zip/';
-                global.__repos = __home+'/public/repos/';
-                global.__bashPath = __helpers+'/bash-scripts/';
+                global.__zip = __home+'public/zip/';
+                global.__repos = __home+'public/repos/';
+                global.__bashPath = __helpers+'bash-scripts/';
                 break;
         }
     },
@@ -23,16 +23,18 @@ module.exports = {
         this.globals = true;
 
         baseDir = baseDir || __dirname;
-        baseDir = baseDir.replace(/\/$/,'')+'/';
+        baseDir = baseDir.replace(/\/+$/,'')+'/';// remove trailing slashes
         global.__home = baseDir;
-        global.__modules = __home+"modules";
+        global.__modules = __home+"modules/";
 
         global.__jsonPath = baseDir+'data/';
         global.__data = baseDir+'data/';
 
         global.__helpers = baseDir+'helpers/';
 
-        projectName && this.setProjectSpecificGlobals(projectName);
+        if(projectName) {
+            this.setProjectSpecificGlobals(projectName);
+        }
 
         global.__config = baseDir+'configs/';
         global.__lang = __config+'lang';
@@ -45,7 +47,7 @@ module.exports = {
         const paths = require('path');
         const basename = paths.basename(__home);
 
-        //https://stackoverflow.com/questions/8683895/how-do-i-determine-the-current-operating-system-with-node-js
+        // https://stackoverflow.com/questions/8683895/how-do-i-determine-the-current-operating-system-with-node-js
         const platform = process.platform;// 'darwin', 'freebsd', 'linux', 'sunos' or 'win32'
         global.__isMac = Boolean(platform.match(/darwin/i));
         debug('isMac ?', __isMac && 'Yes' || 'No');
