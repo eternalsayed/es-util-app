@@ -3,7 +3,7 @@
  */
 const debug = require('debug')(process.env.DEBUG);
 module.exports = {
-    setCommonGlobals: function(baseDir, projectName) {
+    setCommonGlobals: function(baseDir) {
         if(this.globals) return console.log('Globals already set. Returning');
         debug('setting common globals!');
         this.globals = true;
