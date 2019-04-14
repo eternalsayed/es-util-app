@@ -3,20 +3,6 @@
  */
 const debug = require('debug')(process.env.DEBUG);
 module.exports = {
-    setProjectSpecificGlobals: function(projectName) {
-        switch(projectName.toUpperCase()) {
-            case 'GIRIYA_API':
-                global.__routes = __modules+"api/routes/";
-                global.__apiModels = __modules+'api/models/';
-                break;
-            case 'FC_API':
-                global.__models = __home+"models/";
-                global.__zip = __home+'public/zip/';
-                global.__repos = __home+'public/repos/';
-                global.__bashPath = __helpers+'bash-scripts/';
-                break;
-        }
-    },
     setCommonGlobals: function(baseDir, projectName) {
         if(this.globals) return console.log('Globals already set. Returning');
         debug('setting common globals!');
