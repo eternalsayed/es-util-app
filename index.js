@@ -18,10 +18,6 @@ module.exports = {
 
         global.__helpers = baseDir+'helpers/';
 
-        if(projectName) {
-            this.setProjectSpecificGlobals(projectName);
-        }
-
         global.__config = baseDir+'configs/';
         global.__lang = __config+'lang';
         global.__middleware = baseDir+'middleware/';
