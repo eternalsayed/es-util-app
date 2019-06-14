@@ -65,6 +65,38 @@ module.exports = {
         return helperModule;
     },
 
+    location: {
+        use: function(name) {
+            name = name || '';
+            switch(name.toLowerCase()) {
+                case 'ipstack':
+                    return this.ipStack;
+                    break;
+                default:
+                    return this.ipStack;
+            }
+        },
+        ipStack: {
+            apiKey: null,
+            apiPath: 'http://api.ipstack.com/',
+            setApiKey: function(keys) {
+                keys = Array.isArray(keys) ?keys :[keys];
+                let index = 0;
+                if(keys.length>1) {
+                    index = Math.round(Math.random()*keys.length);
+                }
+                this.key = keys[index];
+            },
+            getIpInfo: function(params, callback) {
+                let url = this.apiPath + params.ip + '?access_key='+this.apiKey;
+                let request = require('request');
+                return request(url, null, function(err, res, body) {
+                    callback && callback(err, body);
+                });
+            }
+        }
+    },
+
     // removed: .loadModules function
 
     parentUrl: function(url) {
