@@ -93,7 +93,7 @@ module.exports = {
                 if(localIPs.indexOf(ip)>=0) {
                     ip = 'check';//get requester details if request is from localhost
                 }
-                let url = this.apiPath + params.ip + '?access_key='+this.apiKey;
+                let url = this.apiPath + ip + '?access_key='+this.apiKey;
                 
                 let request = require('request');
                 return request(url, null, function(err, res, body) {
