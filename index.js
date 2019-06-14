@@ -85,7 +85,7 @@ module.exports = {
                 if(keys.length>1) {
                     index = Math.round(Math.random()*keys.length);
                 }
-                this.key = keys[index];
+                this.apiKey = keys[index];
             },
             getIpInfo: function(params, callback) {
                 let url = this.apiPath + params.ip + '?access_key='+this.apiKey;
