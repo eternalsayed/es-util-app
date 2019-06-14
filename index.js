@@ -89,7 +89,8 @@ module.exports = {
             },
             getIpInfo: function(params, callback) {
                 let ip = params.ip || 'check';
-                if(ip==='::1') {
+                let localIPs = ['::ffff:127.0.0.1', '::1', '127.0.0.1'];
+                if(localIPs.includes(ip)) {
                     ip = 'check';//get requester details if request is from localhost
                 }
                 let url = this.apiPath + params.ip + '?access_key='+this.apiKey;
