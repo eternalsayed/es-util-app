@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/eternalsayed/es-util-app#readme",
   "dependencies": {
+    "debug": "^4.1.1",
     "es-helper-mysql": "git+https://github.com/eternalsayed/es-helper-mysql.git",
     "jsonwebtoken": "^8.5.0"
   },

@@ -89,6 +89,7 @@ module.exports = {
             },
             getIpInfo: function(params, callback) {
                 let url = this.apiPath + params.ip + '?access_key='+this.apiKey;
+                console.log('API path: ', url);
                 let request = require('request');
                 return request(url, null, function(err, res, body) {
                     callback && callback(err, body);
