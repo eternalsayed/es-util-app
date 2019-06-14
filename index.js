@@ -88,11 +88,21 @@ module.exports = {
                 this.apiKey = keys[index];
             },
             getIpInfo: function(params, callback) {
+                let ip = params.ip || 'check';
+                if(ip==='::1') {
+                    ip = 'check';//get requester details if request is from localhost
+                }
                 let url = this.apiPath + params.ip + '?access_key='+this.apiKey;
-                console.log('API path: ', url);
+                
                 let request = require('request');
                 return request(url, null, function(err, res, body) {
-                    callback && callback(err, body);
+                    let json = body;
+                    if(!err) {
+                        try {
+                            json = JSON.parse(json);
+                        }catch(e) {}
+                    }
+                    callback ?callback(err, json) :null;
                 });
             }
         }
