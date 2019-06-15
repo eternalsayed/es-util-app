@@ -1,11 +1,11 @@
 /**
  * Created by sayed on 7/3/18.
  */
-// const debug = require('debug')(process.env.DEBUG);
+const debug = require('debug')(process.env.DEBUG || 'app');
 module.exports = {
     setCommonGlobals: function(baseDir) {
         if(this.globals) return console.log('Globals already set. Returning');
-        // debug('setting common globals!');
+        debug('setting common globals!');
         this.globals = true;
 
         baseDir = baseDir || __dirname;
@@ -32,18 +32,18 @@ module.exports = {
         // https://stackoverflow.com/questions/8683895/how-do-i-determine-the-current-operating-system-with-node-js
         const platform = process.platform;// 'darwin', 'freebsd', 'linux', 'sunos' or 'win32'
         global.__isMac = Boolean(platform.match(/darwin/i));
-        // debug('isMac ?', __isMac && 'Yes' || 'No');
+        debug('isMac ?', __isMac && 'Yes' || 'No');
         global.__isLocal = (__isMac || platform.match(/win32/i));
         __isLocal = false;//TODO:Remove this hardcoding
-        // debug('isLocal ?', __isLocal && 'Yes' || 'No');
+        debug('isLocal ?', __isLocal && 'Yes' || 'No');
         global.__mode = !(__isMac || __isLocal) ?(basename.match(/live/i) ?'live' :'dev') :"local";
         //set mode to DEV for debug mode
         if(process.env.DEBUG) {
             global.__mode = 'dev';//TODO: Remove this before deploying
         }
-        // debug('__mode: ', __mode);
+        debug('__mode: ', __mode);
         global.__api = __mode==='live' ?'/prod' :(__isMac || __isLocal ?'' :'/dev');
-        // debug('__api: ', __api);
+        debug('__api: ', __api);
     },
     setRequestGlobals: function(req, res, next) {
         const protocol = 'http' +((req.connection && req.connection.encrypted && 's') || '')+'://';
