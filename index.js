@@ -65,24 +65,10 @@ module.exports = {
         return helperModule;
     },
 
-    getAppVersionFromStore: function(params, callback) {
-        let pkgId = params.packageId || params.pkgId;
-        let ua = params.userAgent || params['user-agent'] || params.ua || params.uA || params.useragent || 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1';
-        let request = require('request');
-        request({
-            method: 'GET',
-            url: 'https://play.google.com/store/apps/details?id='+pkgId,
-            headers: {
-                'User-Agent': ua
-            }
-        }, function(statusCode, err, html) {
-            if(['200', 200, 'ok', 'Ok', 'OK'].indexOf(statusCode)>=0 && !err) {
-                let version = html.match(/(\d\.){3}/);
-                debug('app-current version: ', version);
-                return callback(null, version && version[0]);
-            }
-            callback(err);
-        });
+    getAppInfoFromStore: function(packageId, callback) {
+        var gplay = require('google-play-scraper');
+        gplay.app({appId: packageId})
+        .then(success=>callback(null, success), callback);
     },
     location: {
         use: function(name) {

@@ -19,6 +19,7 @@
   "dependencies": {
     "debug": "^4.1.1",
     "es-helper-mysql": "git+https://github.com/eternalsayed/es-helper-mysql.git",
+    "google-play-scraper": "^6.2.8",
     "jsonwebtoken": "^8.5.0"
   },
   "private": true
