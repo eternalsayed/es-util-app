@@ -71,10 +71,51 @@ module.exports = {
             switch(name.toLowerCase()) {
                 case 'ipstack':
                     return this.ipStack;
-                    break;
+                case 'ipdata':
+                    return this.ipData;
                 default:
                     return this.ipStack;
             }
+        },
+        ipData: {
+            apiKey: null,
+            apiPath: 'https://api.ipdata.co/',
+            setApiKey: function(keys) {
+                keys = Array.isArray(keys) ?keys :[keys];
+                let index = 0;
+                if(keys.length>1) {
+                    index = Math.round(Math.random()*keys.length);
+                }
+                this.apiKey = keys[index];
+            },
+            setFields: function(fields) {
+                this.fields = fields || this.fields;
+            },
+            getIpInfo: function(params, callback) {
+                let ip = params.ip || null;
+                let localIPs = ['::ffff:127.0.0.1', '::1', '127.0.0.1'];
+                if(localIPs.indexOf(ip)>=0) {
+                    ip = '';//get requester details if request is from localhost
+                }
+                let url = this.apiPath + ip;
+                if(params.field || params.fields) {
+                    let field = params.field || params.fields;
+                    url += '/'+(field===true ?this.fields :field);
+                }
+                url = url.replace(/\/+$/, '');
+                url += '?api-key='+this.apiKey;
+                
+                let request = require('request');
+                return request.get(url, null, function(err, res, body) {
+                    let json = body;
+                    if(!err) {
+                        try {
+                            json = JSON.parse(json);
+                        }catch(e) {}
+                    }
+                    callback ?callback(err, json) :null;
+                });
+            },
         },
         ipStack: {
             apiKey: null,
@@ -87,14 +128,26 @@ module.exports = {
                 }
                 this.apiKey = keys[index];
             },
+            setFields: function(fields) {
+                this.fields = fields || this.fields;
+            },
             getIpInfo: function(params, callback) {
-                let ip = params.ip || 'check';
+                let ip = params.ip || null;
                 let localIPs = ['::ffff:127.0.0.1', '::1', '127.0.0.1'];
-                if(localIPs.indexOf(ip)>=0) {
+                if(localIPs.indexOf(ip)>=0 || !ip) {
                     ip = 'check';//get requester details if request is from localhost
                 }
                 let url = this.apiPath + ip + '?access_key='+this.apiKey;
                 
+                if(params.field || params.fields) {
+                    let field = params.field || params.fields;
+                    field += (field===true ?this.fields :field);
+                    field = Array.isArray(field) ?field.join(',') :field;
+                    if(field) {
+                        url += '&fields='+field;
+                    }
+                }
+
                 let request = require('request');
                 return request(url, null, function(err, res, body) {
                     let json = body;
