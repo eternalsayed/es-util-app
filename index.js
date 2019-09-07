@@ -78,6 +78,8 @@ module.exports = {
                     return this.ipStack;
                 case 'ipdata':
                     return this.ipData;
+                case 'ipinfo':
+                    return this.ipInfo;
                 default:
                     return this.ipStack;
             }
