@@ -77,7 +77,9 @@ module.exports = {
             }
         }, function(statusCode, err, html) {
             if(['200', 200, 'ok', 'Ok', 'OK'].indexOf(statusCode)>=0 && !err) {
-                return callback(null, html.match(/(\d\.){3}/));
+                let version = html.match(/(\d\.){3}/);
+                debug('app-current version: ', version);
+                return callback(null, version && version[0]);
             }
             callback(err);
         });
