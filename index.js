@@ -77,6 +77,63 @@ module.exports = {
                     return this.ipStack;
             }
         },
+        ipInfo: {
+            apiKey: null,
+            apiPath: 'https://ipinfo.io/',
+            setApiKey: function(keys) {
+                keys = Array.isArray(keys) ?keys :[keys];
+                let index = 0;
+                if(keys.length>1) {
+                    index = Math.round(Math.random()*keys.length);
+                }
+                this.apiKey = keys[index];
+            },
+            setFields: function(fields) {
+                this.fields = fields || this.fields;
+            },
+            getGeo: function(params, callback) {
+                params = params || {};
+                params.fields = 'geo';
+                return this.getIpInfo(params, callback);
+            },
+            getIpInfo: function(params, callback) {
+                let ip = params.ip || '';
+                let localIPs = ['::ffff:127.0.0.1', '::1', '127.0.0.1'];
+                if(localIPs.indexOf(ip)>=0) {
+                    ip = '';//get requester details if request is from localhost
+                }
+                let url = this.apiPath + ip;
+                if(params.field || params.fields) {
+                    let field = params.field || params.fields;
+                    url += '/'+(field===true ?this.fields :field);
+                }
+                url = url.replace(/\/+$/, '');
+                url += '?token='+this.apiKey;
+                
+                let request = require('request');
+                let config = {
+                    method: 'GET',
+                    url: url,
+                    headers: {
+                        Accept: "application/json"
+                    }
+                };
+                return request(config, function(err, res, body) {
+                    let json = body;
+                    if(!err) {
+                        try {
+                            json = JSON.parse(json);
+                        }catch(e) {}
+                        if(json && json.loc) {
+                            json.location = json.loc.split(',');
+                            json.latittude = json.location[0];
+                            json.longitude = json.location[1];
+                        }
+                    }
+                    callback ?callback(err, json) :null;
+                });
+            },
+        },
         ipData: {
             apiKey: null,
             apiPath: 'https://api.ipdata.co/',
@@ -92,7 +149,7 @@ module.exports = {
                 this.fields = fields || this.fields;
             },
             getIpInfo: function(params, callback) {
-                let ip = params.ip || null;
+                let ip = params.ip || '';
                 let localIPs = ['::ffff:127.0.0.1', '::1', '127.0.0.1'];
                 if(localIPs.indexOf(ip)>=0) {
                     ip = '';//get requester details if request is from localhost
@@ -132,7 +189,7 @@ module.exports = {
                 this.fields = fields || this.fields;
             },
             getIpInfo: function(params, callback) {
-                let ip = params.ip || null;
+                let ip = params.ip || '';
                 let localIPs = ['::ffff:127.0.0.1', '::1', '127.0.0.1'];
                 if(localIPs.indexOf(ip)>=0 || !ip) {
                     ip = 'check';//get requester details if request is from localhost
