@@ -38,9 +38,9 @@ module.exports = {
         debug('isLocal ?', __isLocal && 'Yes' || 'No');
         global.__mode = !(__isMac || __isLocal) ?(basename.match(/live/i) ?'live' :'dev') :"local";
         //set mode to DEV for debug mode
-        if(process.env.DEBUG) {
+        /*if(process.env.DEBUG) {
             global.__mode = 'dev';//TODO: Remove this before deploying
-        }
+        }*/
         debug('__mode: ', __mode);
         global.__api = __mode==='live' ?'/prod' :(__isMac || __isLocal ?'' :'/dev');
         debug('__api: ', __api);
