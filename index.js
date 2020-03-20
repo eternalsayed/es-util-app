@@ -3,28 +3,46 @@
  */
 const debug = require('debug')(process.env.DEBUG || 'app');
 module.exports = {
+    preloads: {mysql: true},
+    presets: {
+        api: true,
+        middleware: true,
+        images: true,
+        data: true,
+        json: true,
+        modules: true,
+        helpers: true,
+        mode: true,
+        config: true,
+        public: true,
+        lang: true
+    },
     setCommonGlobals: function(baseDir) {
         if(this.globals) return console.log('Globals already set. Returning');
         debug('setting common globals!');
+        const PRESETS = this.presets;
+        const PRELOADS = this.preloads;
+
         this.globals = true;
 
         baseDir = baseDir || __dirname;
         baseDir = baseDir.replace(/\/+$/,'')+'/';// remove trailing slashes
         global.__home = baseDir;
-        global.__modules = __home+"modules/";
 
-        global.__jsonPath = baseDir+'data/';
-        global.__data = baseDir+'data/';
+        PRESETS.modules && (global.__modules = __home+"modules/");
 
-        global.__helpers = baseDir+'helpers/';
+        PRESETS.json && (global.__jsonPath = baseDir+'data/');
+        PRESETS.data && (global.__data = baseDir+'data/');
 
-        global.__config = baseDir+'configs/';
-        global.__lang = __config+'lang';
-        global.__middleware = baseDir+'middleware/';
-        global.__public = baseDir+'public/';
-        global.__images = __public+'images/';
+        PRESETS.helpers && (global.__helpers = baseDir+'helpers/');
 
-        global.dbo = this.loadHelper('mysql');
+        PRESETS.config && (global.__config = baseDir+'configs/');
+        PRESETS.lang && (global.__lang = __config+'lang');
+        PRESETS.middleware && (global.__middleware = baseDir+'middleware/');
+        PRESETS.public && (global.__public = baseDir+'public/');
+        PRESETS.images && (global.__images = __public+'images/');
+
+        PRELOADS.mysql && (global.dbo = this.loadHelper('mysql'));
 
         const paths = require('path');
         const basename = paths.basename(__home);
@@ -36,13 +54,13 @@ module.exports = {
         global.__isLocal = (__isMac || platform.match(/win32/i));
         __isLocal = false;//TODO:Remove this hardcoding
         debug('isLocal ?', __isLocal && 'Yes' || 'No');
-        global.__mode = !(__isMac || __isLocal) ?(basename.match(/live/i) ?'live' :'dev') :"local";
+        PRESETS.mode && (global.__mode = !(__isMac || __isLocal) ?(basename.match(/live/i) ?'live' :'dev') :"local");
         //set mode to DEV for debug mode
         /*if(process.env.DEBUG) {
             global.__mode = 'dev';//TODO: Remove this before deploying
         }*/
         debug('__mode: ', __mode);
-        global.__api = __mode==='live' ?'/prod' :(__isMac || __isLocal ?'' :'/dev');
+        PRESETS.api && (global.__api = __mode==='live' ?'/prod' :(__isMac || __isLocal ?'' :'/dev'));
         debug('__api: ', __api);
     },
     setRequestGlobals: function(req, res, next) {
@@ -70,162 +88,7 @@ module.exports = {
         gplay.app({appId: packageId})
         .then(success=>callback(null, success), callback);
     },
-    location: {
-        use: function(name) {
-            name = name || '';
-            switch(name.toLowerCase()) {
-                case 'ipstack':
-                    return this.ipStack;
-                case 'ipdata':
-                    return this.ipData;
-                case 'ipinfo':
-                    return this.ipInfo;
-                default:
-                    return this.ipStack;
-            }
-        },
-        ipInfo: {
-            apiKey: null,
-            apiPath: 'https://ipinfo.io/',
-            setApiKey: function(keys) {
-                keys = Array.isArray(keys) ?keys :[keys];
-                let index = 0;
-                if(keys.length>1) {
-                    index = Math.round(Math.random()*keys.length);
-                }
-                this.apiKey = keys[index];
-            },
-            setFields: function(fields) {
-                this.fields = fields || this.fields;
-            },
-            getGeo: function(params, callback) {
-                params = params || {};
-                params.fields = 'geo';
-                return this.getIpInfo(params, callback);
-            },
-            getIpInfo: function(params, callback) {
-                let ip = params.ip || '';
-                let localIPs = ['::ffff:127.0.0.1', '::1', '127.0.0.1'];
-                if(localIPs.indexOf(ip)>=0) {
-                    ip = '';//get requester details if request is from localhost
-                }
-                let url = this.apiPath + ip;
-                if(params.field || params.fields) {
-                    let field = params.field || params.fields;
-                    url += '/'+(field===true ?this.fields :field);
-                }
-                url = url.replace(/\/+$/, '');
-                url += '?token='+this.apiKey;
-                
-                let request = require('request');
-                let config = {
-                    method: 'GET',
-                    url: url,
-                    headers: {
-                        Accept: "application/json"
-                    }
-                };
-                return request(config, function(err, res, body) {
-                    let json = body;
-                    if(!err) {
-                        try {
-                            json = JSON.parse(json);
-                        }catch(e) {}
-                        if(json && json.loc) {
-                            json.location = json.loc.split(',');
-                            json.latittude = json.location[0];
-                            json.longitude = json.location[1];
-                        }
-                    }
-                    callback ?callback(err, json) :null;
-                });
-            },
-        },
-        ipData: {
-            apiKey: null,
-            apiPath: 'https://api.ipdata.co/',
-            setApiKey: function(keys) {
-                keys = Array.isArray(keys) ?keys :[keys];
-                let index = 0;
-                if(keys.length>1) {
-                    index = Math.round(Math.random()*keys.length);
-                }
-                this.apiKey = keys[index];
-            },
-            setFields: function(fields) {
-                this.fields = fields || this.fields;
-            },
-            getIpInfo: function(params, callback) {
-                let ip = params.ip || '';
-                let localIPs = ['::ffff:127.0.0.1', '::1', '127.0.0.1'];
-                if(localIPs.indexOf(ip)>=0) {
-                    ip = '';//get requester details if request is from localhost
-                }
-                let url = this.apiPath + ip;
-                if(params.field || params.fields) {
-                    let field = params.field || params.fields;
-                    url += '/'+(field===true ?this.fields :field);
-                }
-                url = url.replace(/\/+$/, '');
-                url += '?api-key='+this.apiKey;
-                
-                let request = require('request');
-                return request.get(url, null, function(err, res, body) {
-                    let json = body;
-                    if(!err) {
-                        try {
-                            json = JSON.parse(json);
-                        }catch(e) {}
-                    }
-                    callback ?callback(err, json) :null;
-                });
-            },
-        },
-        ipStack: {
-            apiKey: null,
-            apiPath: 'http://api.ipstack.com/',
-            setApiKey: function(keys) {
-                keys = Array.isArray(keys) ?keys :[keys];
-                let index = 0;
-                if(keys.length>1) {
-                    index = Math.round(Math.random()*keys.length);
-                }
-                this.apiKey = keys[index];
-            },
-            setFields: function(fields) {
-                this.fields = fields || this.fields;
-            },
-            getIpInfo: function(params, callback) {
-                let ip = params.ip || '';
-                let localIPs = ['::ffff:127.0.0.1', '::1', '127.0.0.1'];
-                if(localIPs.indexOf(ip)>=0 || !ip) {
-                    ip = 'check';//get requester details if request is from localhost
-                }
-                let url = this.apiPath + ip + '?access_key='+this.apiKey;
-                
-                if(params.field || params.fields) {
-                    let field = params.field || params.fields;
-                    field += (field===true ?this.fields :field);
-                    field = Array.isArray(field) ?field.join(',') :field;
-                    if(field) {
-                        url += '&fields='+field;
-                    }
-                }
-
-                let request = require('request');
-                return request(url, null, function(err, res, body) {
-                    let json = body;
-                    if(!err) {
-                        try {
-                            json = JSON.parse(json);
-                        }catch(e) {}
-                    }
-                    callback ?callback(err, json) :null;
-                });
-            }
-        }
-    },
-
+    location: require('./location-util'),
     // removed: .loadModules function
 
     parentUrl: function(url) {
