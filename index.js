@@ -51,17 +51,24 @@ module.exports = {
         const platform = process.platform;// 'darwin', 'freebsd', 'linux', 'sunos' or 'win32'
         global.__isMac = Boolean(platform.match(/darwin/i));
         debug('isMac ?', __isMac && 'Yes' || 'No');
+        
         global.__isLocal = (__isMac || platform.match(/win32/i));
         __isLocal = false;//TODO:Remove this hardcoding
         debug('isLocal ?', __isLocal && 'Yes' || 'No');
-        PRESETS.mode && (global.__mode = !(__isMac || __isLocal) ?(basename.match(/live/i) ?'live' :'dev') :"local");
-        //set mode to DEV for debug mode
-        /*if(process.env.DEBUG) {
-            global.__mode = 'dev';//TODO: Remove this before deploying
-        }*/
-        debug('__mode: ', __mode);
-        PRESETS.api && (global.__api = __mode==='live' ?'/prod' :(__isMac || __isLocal ?'' :'/dev'));
-        debug('__api: ', __api);
+
+        if(PRESETS.mode) {
+            global.__mode = !(__isMac || __isLocal) ?(basename.match(/live/i) ?'live' :'dev') :"local";
+            //set mode to DEV for debug mode
+            /*if(process.env.DEBUG) {
+                global.__mode = 'dev';//TODO: Remove this before deploying
+            }*/
+            debug('__mode: ', __mode);
+        }
+
+        if(PRESETS.api) {
+            global.__api = __mode==='live' ?'/prod' :(__isMac || __isLocal ?'' :'/dev');
+            debug('__api: ', __api);
+        }
     },
     setRequestGlobals: function(req, res, next) {
         const protocol = 'http' +((req.connection && req.connection.encrypted && 's') || '')+'://';
