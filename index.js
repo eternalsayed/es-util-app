@@ -95,7 +95,8 @@ module.exports = {
         gplay.app({appId: packageId})
         .then(success=>callback(null, success), callback);
     },
-    location: require('./location-util'),
+    location: require('./location.util'),
+    gdrive: require('./gdrive.util'),
     // removed: .loadModules function
 
     parentUrl: function(url) {
