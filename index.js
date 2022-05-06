@@ -179,7 +179,13 @@ module.exports = {
   createUserToken: function (userObj, config) {
     let jwt = require("jsonwebtoken");
     const temp = this.toCamelCase(userObj);
-    config = config || require(__config + "/app/app.config");
+    const { jwtSecret } = config || {};
+    if (!jwtSecret) {
+      config = {
+        ...(config || {}),
+        ...require(__config + "/app/app.config"),
+      };
+    }
     var tokenObj = {
       userId: temp.userId,
       userEmail: temp.userEmail || temp.email,
@@ -188,7 +194,14 @@ module.exports = {
       // anything additional that needs to be added to token
       ...(userObj.additional || {}),
     };
-    return jwt.sign(tokenObj, config.jwtSecret, { noTimestamp: true });
+    const options = {
+      noTimestamp: !(config && config.expiresIn),
+    };
+    if (!options.noTimestamp) {
+      delete options.noTimestamp;
+      options.expiresIn = config.expiresIn;
+    }
+    return jwt.sign(tokenObj, config.jwtSecret, options);
   },
   queryStringToJSON: function (str) {
     if (typeof str !== "string" || !str.match(/(.*=.*&?)+/)) return str;

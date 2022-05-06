@@ -1,6 +1,6 @@
 {
   "name": "es-util-app",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "ES Utility for NodeJS apps",
   "main": "index.js",
   "scripts": {
