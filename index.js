@@ -2,6 +2,7 @@
  * Created by sayed on 7/3/18.
  */
 const debug = require("debug")(process.env.DEBUG || "app");
+require("dotenv").config();
 module.exports = {
   preloads: { mysql: true },
   presets: {
@@ -19,6 +20,7 @@ module.exports = {
   },
   setCommonGlobals: function (baseDir) {
     if (this.globals) return console.log("Globals already set. Returning");
+
     debug("setting common globals!");
     const PRESETS = this.presets;
     const PRELOADS = this.preloads;
@@ -57,15 +59,16 @@ module.exports = {
     debug("isLocal ?", (__isLocal && "Yes") || "No");
 
     if (PRESETS.mode) {
-      global.__mode = !(__isMac || __isLocal)
-        ? basename.match(/live/i)
-          ? "live"
-          : "dev"
-        : "local";
-      //set mode to DEV for debug mode
-      /*if(process.env.DEBUG) {
-                global.__mode = 'dev';//TODO: Remove this before deploying
-            }*/
+      if (process.env.MODE) {
+        global.__mode = process.env.MODE;
+        debug("Using mode from env: ", process.env.MODE);
+      } else {
+        global.__mode = !(__isMac || __isLocal)
+          ? basename.match(/live/i)
+            ? "live"
+            : "dev"
+          : "local";
+      }
       debug("__mode: ", __mode);
     }
 
