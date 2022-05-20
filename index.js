@@ -100,13 +100,6 @@ module.exports = {
     }
     return helperModule;
   },
-
-  getAppInfoFromStore: function (packageId, callback) {
-    var gplay = require("google-play-scraper");
-    gplay
-      .app({ appId: packageId })
-      .then((success) => callback(null, success), callback);
-  },
   location: require("./location.util"),
   gdrive: require("./gdrive.util"),
   // removed: .loadModules function
