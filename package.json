@@ -1,6 +1,6 @@
 {
   "name": "es-util-app",
-  "version": "1.0.9",
+  "version": "1.1.0",
   "description": "ES Utility for NodeJS apps",
   "main": "index.js",
   "scripts": {
@@ -19,8 +19,8 @@
   "dependencies": {
     "debug": "^4.1.1",
     "es-helper-mysql": "git+https://github.com/eternalsayed/es-helper-mysql.git",
-    "googleapis": "^48.0.0",
-    "jsonwebtoken": "^8.5.1"
+    "googleapis": "^118.0.0",
+    "jsonwebtoken": "^9.0.0"
   },
   "private": true
 }
