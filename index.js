@@ -101,7 +101,6 @@ module.exports = {
     return helperModule;
   },
   location: require("./location.util"),
-  gdrive: require("./gdrive.util"),
   // removed: .loadModules function
 
   parentUrl: function (url) {
