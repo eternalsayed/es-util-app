@@ -45,28 +45,21 @@ module.exports = {
       url = url.replace(/\/+$/, "");
       url += "?token=" + this.apiKey;
 
-      let request = require("request");
-      let config = {
-        method: "GET",
-        url: url,
-        headers: {
-          Accept: "application/json",
-        },
-      };
-      return request(config, function (err, res, body) {
-        let json = body;
-        if (!err) {
-          try {
-            json = JSON.parse(json);
-          } catch (e) {}
-          if (json && json.loc) {
-            json.location = json.loc.split(",");
-            json.latittude = json.location[0];
-            json.longitude = json.location[1];
-          }
-        }
-        callback ? callback(err, json) : null;
-      });
+      const axios = require("axios");
+      return axios
+        .get(url, {
+          headers: {
+            Accept: "application/json",
+          },
+        })
+        .then(({ data }) => {
+          const json = data;
+          json.location = json.loc.split(",");
+          json.latittude = json.location[0];
+          json.longitude = json.location[1];
+          return callback(null, json);
+        })
+        .catch(callback);
     },
   },
   ipData: {
@@ -97,16 +90,11 @@ module.exports = {
       url = url.replace(/\/+$/, "");
       url += "?api-key=" + this.apiKey;
 
-      let request = require("request");
-      return request.get(url, null, function (err, res, body) {
-        let json = body;
-        if (!err) {
-          try {
-            json = JSON.parse(json);
-          } catch (e) {}
-        }
-        callback ? callback(err, json) : null;
-      });
+      const axios = require("axios");
+      return axios
+        .get(url)
+        .then(({ data }) => callback(null, data))
+        .catch(callback);
     },
   },
   ipStack: {
@@ -140,16 +128,11 @@ module.exports = {
         }
       }
 
-      let request = require("request");
-      return request(url, null, function (err, res, body) {
-        let json = body;
-        if (!err) {
-          try {
-            json = JSON.parse(json);
-          } catch (e) {}
-        }
-        callback ? callback(err, json) : null;
-      });
+      const axios = require("axios");
+      return axios
+        .get(url)
+        .then(({ data }) => callback(null, data))
+        .catch(callback);
     },
   },
 };
